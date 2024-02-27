@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/hungarian.css" rel="stylesheet">
+    </head>
+    <body style="">
+        <!--------------------------- 수정은 여기서부터------------------------------->
+        <div class="page-header-div">
+            <div class="parent-div title-block-div">
+                <!--------------------------- 수정 1: 제목은 여기에..------------------------------->
+                <div class="child-div page-header-text">1주차.단어</div>
+                <!--------------------------------------------------------------------------------->
+            </div>
+        </div>
+        <div class="page-upper-div">
+            <div class="parent-div pink-div" onclick="blockClicked('audio1')">
+                <div class="child-div maximum-width-column block-text-div">
+                    <!--------------------------- 수정 2: original 세팅, korean 세팅 그리고 테그 안의 값은 original 값으로------------------------------->
+                    <span id="text1" class="block-text-span">헝가리어 텍스트 입력</span>
+                    <!----------------------------------수정2 종료">kapten----------------------------------->
+                </div>
+            </div>
+        </div>
+        <div class="page-lower-div">
+            <div class="parent-div blue-div" onclick="blockClicked('audio2')">
+                <div class="child-div maximum-width-column block-text-div">
+                    <!--------------------------- 수정 3: original 세팅, korean 세팅 그리고 테그 안의 값은 original 값으로------------------------------->
+                    <span id="text2" class="block-text-span" style="display: none">한국어 텍스트 입력</span>
+                    <!----------------------------------수정3 종료----------------------------------->
+                </div>
+            </div>
+        </div>
+
+        <audio id="audio1" onended="audioPlayFinished(event)">
+            <!--------------------------- 수정 4: 상단 음원 이름 설정 ------------------------------->
+            <source src="audio/gr-es-01-001.mp3" type="audio/mpeg">
+            <!----------------------------------수정4 종료----------------------------------->
+        </audio>
+        <audio id="audio2" onended="audioPlayFinished(event)">
+            <!--------------------------- 수정 5: 하단 음원 이름 설정------------------------------->
+            <source src="audio/gr-es-01-001.mp3" type="audio/mpeg">
+            <!----------------------------------수정5 종료----------------------------------->
+        </audio>
+        <!--------------------------- 밑부분은 수정 안합니다.------------------------------->
+        <script src="js/jquery-3.1.0.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/jquery.touchSwipe.min.js"></script>
+        <script>
+            var isAutoPlaying = false;
+            var autoPlayIndex = 0;
+            var autoPlayAudioNameArray = ['audio1', 'audio2'];
+            var autoPlayTextArray = ['text1', 'text2'];
+            var sourceElement = null;
+            var timer = null;
+            $("body").swipe({
+                swipeLeft:function(event, direction, distance, duration, fingerCount) {
+                    if(!isAutoPlaying) {
+                        window.parent.goNextView();
+                    } else {
+                        window.parent.showAlert("자동 재생 중 입니다!", 1000, "WARNING");
+                    }
+                },
+                swipeRight:function(event, direction, distance, duration, fingerCount) {
+                    if(!isAutoPlaying) {
+                        window.parent.goPrevView();
+                    } else {
+                        window.parent.showAlert("자동 재생 중 입니다!", 1000, "WARNING");
+                    }
+                }
+            });
+            function blockClicked(fileName) {
+                if(!isAutoPlaying) {
+                    if(fileName === "audio2") {
+                        $("#text2").css("display", "inline");
+                    }
+                    document.getElementById(fileName).play();
+                }
+            }
+            function audioPlayFinished(event) {
+                var sourceAudioIDText = $(event.currentTarget).attr("id");
+                if(isAutoPlaying) {
+                    if(autoPlayIndex < (autoPlayAudioNameArray.length - 1)) {
+                        autoPlayIndex++;
+                        timer = setTimeout(playAudioInAuto, 3000);
+                    } else {
+                        timer = setTimeout(autoPlayCompleted, 1000);
+                    }
+                }
+            }
+            function autoPlayCompleted() {
+                if(isAutoPlaying) {
+                    window.parent.contentsPageAutoPlayCompleted();
+                    isAutoPlaying = false;
+                }
+            }
+            function doAutoPlay() {
+                isAutoPlaying = true;
+                timer = setTimeout(playAudioInAuto, 3000);
+            }
+            function startAutoPlay() {
+                isAutoPlaying = true;
+                timer = setTimeout(playAudioInAuto, 1000);
+            }
+            function stopAutoPlay() {
+                document.getElementById(autoPlayAudioNameArray[autoPlayIndex]).stop();
+                clearTimeout(timer);
+            }
+            function playAudioInAuto() {
+                if(isAutoPlaying) {
+                    if(autoPlayIndex === 1) {
+                        $("#text2").css("display", "inline");
+                    }
+                    document.getElementById(autoPlayAudioNameArray[autoPlayIndex]).play();
+                }
+            }
+        </script>
+    </body>
+</html>
